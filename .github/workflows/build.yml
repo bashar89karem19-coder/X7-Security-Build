@@ -1,13 +1,32 @@
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
+name: Build APK
 
-    - name: Install Buildozer dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential libssl-dev libffi-dev libxml2-dev libxslt1-dev zlib1g-dev python3-setuptools python3-pip python3-dev
-        pip install --user --upgrade "buildozer<1.6.0" "cython<3.0"
+on:
+  push:
+    branches: [ main ]
 
-    - name: Build with Buildozer
-      run: buildozer android debug --accept-sdk-license
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Buildozer dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libssl-dev libffi-dev libxml2-dev libxslt1-dev zlib1g-dev python3-setuptools python3-pip python3-dev
+          pip install --user --upgrade "buildozer<1.6.0" "cython<3.0"
+
+      - name: Build with Buildozer
+        run: buildozer android debug --accept-sdk-license
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: X7-Security-App
+          path: bin/*.apk
